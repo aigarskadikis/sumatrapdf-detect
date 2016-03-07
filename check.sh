@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#this code is tested un fresh 2015-11-21-raspbian-jessie-lite Raspberry Pi image
+#this code is tested un fresh 2016-02-09-raspbian-jessie-lite Raspberry Pi image
 #by default this script should be located in two subdirecotries under the home
 
 #sudo apt-get update -y && sudo apt-get upgrade -y
