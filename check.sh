@@ -151,11 +151,27 @@ echo Make sure you have created \"$appname\" directory inside it!
 echo
 fi
 
+case "$type" in
+-64-install.exe)
+title=$(echo "(64-bit)")
+;;
+-64.zip)
+title=$(echo "(64-bit) portable")
+;;
+-install.exe)
+title=$(echo "(32-bit)")
+;;
+.zip)
+title=$(echo "(32-bit) portable")
+;;
+esac
+
+
 #lets send emails to all people in "posting" file
 emails=$(cat ../posting | sed '$aend of file')
 printf %s "$emails" | while IFS= read -r onemail
 do {
-python ../send-email.py "$onemail" "$name $version" "$url 
+python ../send-email.py "$onemail" "$name $version $title" "$url 
 $md5
 $sha1
 
