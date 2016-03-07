@@ -64,6 +64,9 @@ url=$(echo "http://www.sumatrapdfreader.org/sumatra.js")
 #set download base
 dlbase=$(echo "https://kjkpub.s3.amazonaws.com/sumatrapdf/rel/SumatraPDF-")
 
+#change log location
+changes=$(echo "http://www.sumatrapdfreader.org/news.html")
+
 #lets tauch a little bit javascript file to see if it is there 
 wget -S --spider -o $tmp/output.log "$url"
 
@@ -81,6 +84,20 @@ grep "$version" $db
 if [ $? -ne 0 ]
 then
 echo new version detected!
+
+#get change log
+wget -qO- "$changes" | grep -A99 version_history | grep -m2 -B99 "<b id=" | grep -v "<h2 \|<b id=" | sed -e "s/<[^>]*>//g" | grep "\w" | sed "s/^[ \t]*//g" | sed -e "/release:/! s/^/- /" > $tmp/change.log
+
+#check if even something has been created
+if [ -f $tmp/change.log ]; then
+
+#calculate how many lines log file contains
+lines=$(cat $tmp/change.log | wc -l)
+if [ $lines -gt 0 ]; then
+echo change log found:
+echo
+
+cat $tmp/change.log
 
 #we have 32-bit and 64-bit version installers an so as portable versions
 filetypes=$(cat <<EOF
@@ -134,11 +151,37 @@ printf %s "$emails" | while IFS= read -r onemail
 do {
 python ../send-email.py "$onemail" "$name $version" "$url 
 $md5
-$sha1"
+$sha1
+
+`cat $tmp/change.log`"
 } done
 echo
 
 } done
+
+else
+#changes.log file has created but changes is mission
+echo changes.log file has created but changes is mission
+emails=$(cat ../maintenance | sed '$aend of file')
+printf %s "$emails" | while IFS= read -r onemail
+do {
+python ../send-email.py "$onemail" "$name" "changes.log file has created but changes is mission: 
+$version 
+$changes "
+} done
+fi
+
+else
+#changes.log has not been created
+echo changes.log has not been created
+emails=$(cat ../maintenance | sed '$aend of file')
+printf %s "$emails" | while IFS= read -r onemail
+do {
+python ../send-email.py "$onemail" "$name" "changes.log has not been created: 
+$version 
+$changes "
+} done
+fi
 
 else
 #version is already in database
