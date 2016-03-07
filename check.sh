@@ -54,6 +54,11 @@ if [ ! -d "../gd" ]; then
   mkdir -p "../gd"
 fi
 
+if [ -f ~/uploader_credentials.txt ]; then
+sed "s/folder = test/folder = `echo $appname`/" ./uploader.cfg > ./gd/$appname.cfg
+else
+echo google upload will not be used cause ~/uploader_credentials.txt do not exist
+fi
 
 #application name
 name=$(echo "SumatraPDF")
@@ -136,12 +141,13 @@ echo "$md5">> $db
 echo "$sha1">> $db
 echo >> $db
 
+
 #if google drive config exists then upload and delete file:
 if [ -f "../gd/$appname.cfg" ]
 then
-echo Uploading $newfilename to Google Drive..
+echo Uploading $filename to Google Drive..
 echo Make sure you have created \"$appname\" directory inside it!
-../uploader.py "../gd/$appname.cfg" "$tmp/$newfilename"
+../uploader.py "../gd/$appname.cfg" "$tmp/$filename"
 echo
 fi
 
