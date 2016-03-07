@@ -55,7 +55,7 @@ if [ ! -d "../gd" ]; then
 fi
 
 if [ -f ~/uploader_credentials.txt ]; then
-sed "s/folder = test/folder = `echo $appname`/" ./uploader.cfg > ./gd/$appname.cfg
+sed "s/folder = test/folder = `echo $appname`/" ../uploader.cfg > ../gd/$appname.cfg
 else
 echo google upload will not be used cause ~/uploader_credentials.txt do not exist
 fi
